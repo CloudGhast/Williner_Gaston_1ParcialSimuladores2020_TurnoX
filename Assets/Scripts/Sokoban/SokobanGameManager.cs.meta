@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 67c2b9b7775d7dd4695b5220c12374a7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - casillero: {fileID: 8898389108243440609, guid: c9955a8308f6f0a48a9948a7b9fc9210,
+      type: 3}
+  - jugador: {fileID: 7376750908415990722, guid: cd1665171739fc04b8b43159d7fd570b,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
