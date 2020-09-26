@@ -45,6 +45,16 @@ public class SokobanGameManager : MonoBehaviour
             orientacionJugador = "arriba";
             mover();
         }
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            orientacionJugador = "izquierda";
+            mover();
+        }
+        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            orientacionJugador = "abajo";
+            mover();
+        }
         if (Input.GetKeyDown(KeyCode.Z))
         {
             estoyDeshaciendo = true;
