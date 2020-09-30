@@ -8,7 +8,9 @@ public class SokobanLevelManager : MonoBehaviour
     public GameObject jugador;
     public GameObject bloque;
     public GameObject pared;
- 
+    public Texture2D mapa;
+    public ColorAPrefab[] colorMappings;
+
     public static SokobanLevelManager instancia;
 
     void Awake()
@@ -65,18 +67,42 @@ public class SokobanLevelManager : MonoBehaviour
 
     private Tablero dameTableroNivel1()
     {
-        Tablero tablero = SokobanLevelManager.instancia.dameTablero(8, 8);
-
-        tablero.setearObjeto(pared, new Vector2(6, 6));
-        tablero.setearObjeto(jugador, new Vector2(1,1));
-        tablero.setearObjeto(bloque, new Vector2(5,4));
-        tablero.setearObjeto(bloque, new Vector2(3, 3));
-        tablero.setearObjeto(bloque, new Vector2(4, 4));
-        tablero.setearObjeto(casilleroTarget, new Vector2(1, 7));
-        tablero.setearObjeto(casilleroTarget, new Vector2(2, 7));
-        tablero.setearObjeto(casilleroTarget, new Vector2(3, 7));
+        Tablero tablero = instancia.dameTablero(mapa.width, mapa.height);
+        GenerarNivel(tablero);
         return tablero;
     }
+
+        void GenerarNivel(Tablero tablero)
+        {
+            for (int x = 0; x < mapa.width; x++)
+            {
+                for (int y = 0; y < mapa.height; y++)
+                {
+                    GenerarTile(x, y, tablero);
+                }
+            }
+        }
+
+        void GenerarTile(int x, int y, Tablero tablero)
+        {
+            Color pixelColor = mapa.GetPixel(x, y);
+            if (pixelColor.a == 0)
+            {
+                return;
+            }
+            foreach (ColorAPrefab colorMapping in colorMappings)
+            {
+                if (colorMapping.color.Equals(pixelColor))
+                {
+                    Vector2 position = new Vector2(x, y);
+                    tablero.setearObjeto(colorMapping.prefab, position);
+                }
+
+            }
+        }
 }
+
+
+
 
 
