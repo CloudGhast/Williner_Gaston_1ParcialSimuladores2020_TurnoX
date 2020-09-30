@@ -116,7 +116,13 @@ public class SokobanGameManager : MonoBehaviour
         }
         else
         {
-            Tablero tableroAnterior = RetrieveTablero();
+            Tablero tableAux = new Tablero(nivel.Tablero.casilleros.GetLength(0), nivel.Tablero.casilleros.GetLength(1));
+            tableAux.setearObjetos(casillero, nivel.Tablero.damePosicionesObjetos("Casillero"));
+            tableAux.setearObjetos(casilleroTarget, nivel.Tablero.damePosicionesObjetos("CasilleroTarget"));
+            tableAux.setearObjetos(bloque, nivel.Tablero.damePosicionesObjetos("Bloque"));
+            tableAux.setearObjetos(pared, nivel.Tablero.damePosicionesObjetos("Pared"));
+            tableAux.setearObjetos(jugador, nivel.Tablero.damePosicionesObjetos("Jugador"));
+            Tablero tableroAnterior = RetrieveTablero(tableAux);
             if (tableroAnterior != null)
             {
                 nivel.Tablero.setearObjeto(casillero, nivel.Tablero.damePosicionObjeto("Jugador"));
@@ -155,7 +161,7 @@ public class SokobanGameManager : MonoBehaviour
         pilaTablerosAnteriores.Push(tablero);
     }
 
-    private Tablero RetrieveTablero()
+    private Tablero RetrieveTablero(Tablero board)
     {
         if (pilaTablerosAnteriores.Count > 0)
         {
@@ -165,13 +171,8 @@ public class SokobanGameManager : MonoBehaviour
         else
         {
             Debug.Log("La pila está vacia");
-            return null;
+            return board;
         }
-    }
-
-    private void dameNivelCustom()
-    {
-
     }
 }
 
