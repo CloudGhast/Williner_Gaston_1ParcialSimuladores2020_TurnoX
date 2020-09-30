@@ -24,6 +24,7 @@ public class SokobanGameManager : MonoBehaviour
         jugador = SokobanLevelManager.instancia.dameLstPrefabsSokoban().Find(x => x.name == "Jugador");
         bloque = SokobanLevelManager.instancia.dameLstPrefabsSokoban().Find(x => x.name == "Bloque");
         CargarNivel(nombreNivelActual);
+        pilaTablerosAnteriores = new Stack();
     }
 
     private void CargarNivel(string nombre)
@@ -76,7 +77,7 @@ public class SokobanGameManager : MonoBehaviour
             tablAux.setearObjetos(bloque, nivel.Tablero.damePosicionesObjetos("Bloque"));
             tablAux.setearObjetos(pared, nivel.Tablero.damePosicionesObjetos("Pared"));
             tablAux.setearObjetos(jugador, nivel.Tablero.damePosicionesObjetos("Jugador"));
-   
+
             //TIP: pilaTablerosAnteriores.Push(tablAux);
 
             Vector2 posicionJugador = new Vector2(nivel.Tablero.damePosicionObjeto("Jugador").x, nivel.Tablero.damePosicionObjeto("Jugador").y);
@@ -86,6 +87,7 @@ public class SokobanGameManager : MonoBehaviour
 
             if (objProximo != null && objProximo.CompareTag("casillero"))
             {
+                GuardarMovimientoStack(tablAux);
                 nivel.Tablero.setearObjeto(casillero, posicionJugador);
                 nivel.Tablero.setearObjeto(jugador, posicionJugador, orientacionJugador, 1);
             }
@@ -98,8 +100,9 @@ public class SokobanGameManager : MonoBehaviour
                     {
                         nivel.Tablero.setearObjeto(jugador, posicionJugador, orientacionJugador, 1);
                         {
+                            GuardarMovimientoStack(tablAux);
                             nivel.Tablero.setearObjeto(casillero, posicionJugador);
-                            nivel.Tablero.setearObjeto(bloque, posicionJugador, orientacionJugador, 2); ;
+                            nivel.Tablero.setearObjeto(bloque, posicionJugador, orientacionJugador, 2);
                         }
                     }
                 }
@@ -113,7 +116,19 @@ public class SokobanGameManager : MonoBehaviour
         }
         else
         {
-            estoyDeshaciendo = false;
+            Tablero tableroAnterior = RetrieveTablero();
+            if (tableroAnterior != null)
+            {
+                nivel.Tablero.setearObjeto(casillero, nivel.Tablero.damePosicionObjeto("Jugador"));
+                nivel.Tablero.setearObjetos(casillero, tableroAnterior.damePosicionesObjetos("Casillero"));
+                nivel.Tablero.setearObjetos(casilleroTarget, tableroAnterior.damePosicionesObjetos("CasilleroTarget"));
+                nivel.Tablero.setearObjeto(jugador, tableroAnterior.damePosicionObjeto("Jugador"));
+                nivel.Tablero.setearObjetos(bloque, tableroAnterior.damePosicionesObjetos("Bloque"));
+
+                InstanciadorPrefabs.instancia.graficarObjetosTablero(nivel.Tablero, SokobanLevelManager.instancia.dameLstPrefabsSokoban());
+
+                estoyDeshaciendo = false;
+            }
         }
     }
 
@@ -134,5 +149,58 @@ public class SokobanGameManager : MonoBehaviour
         }
         return false;
     }
+
+    private void GuardarMovimientoStack(Tablero tablero)
+    {
+        pilaTablerosAnteriores.Push(tablero);
+    }
+
+    private Tablero RetrieveTablero()
+    {
+        if (pilaTablerosAnteriores.Count > 0)
+        {
+            Tablero tableroaux = (Tablero)pilaTablerosAnteriores.Pop();
+            return tableroaux;
+        }
+        else
+        {
+            Debug.Log("La pila está vacia");
+            return null;
+        }
+    }
+}
+public class GeneradorDeNivel : MonoBehaviour 
+{
+    public Texture2D mapa;
+    public ColorAPrefab[] colorMappings;
+    void GenerarNivel(Tablero tablero)
+    {
+        for (int x = 0; x < mapa.width; x++)
+        {
+            for (int y = 0; y < mapa.height; y++)
+            {
+                GenerarTile(x, y, tablero);
+            }
+        }
+    }
+
+    void GenerarTile(int x, int y, Tablero tablero)
+    {
+        Color pixelColor = mapa.GetPixel(x, y);
+        if (pixelColor.a == 0)
+        {
+            return;
+        }
+        foreach (ColorAPrefab colorMapping in colorMappings)
+        {
+            if (colorMapping.color.Equals(pixelColor))
+            {
+                Vector2 position = new Vector2(x, y);
+                tablero.setearObjeto(colorMapping.prefab, position);
+            }
+
+        }
+    }
+
 }
 
